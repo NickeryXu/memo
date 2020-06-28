@@ -5,6 +5,8 @@
 # Created by: PyQt5 UI code generator 5.8.2
 #
 # WARNING! All changes made in this file will be lost!
+import os
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -17,6 +19,23 @@ BUTTON_HEIGHT = 30
 BUTTON_WIDTH = 30
 # 标题栏高度
 TITLE_HEIGHT = 30
+
+
+# 生成资源文件目录访问路径
+def resource_path(relative_path):
+    if getattr(sys, 'frozen', False):  # 是否Bundle Resource
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
+img_min = resource_path("image/min.png").replace('\\', '/')
+img_max = resource_path("image/max.png").replace('\\', '/')
+img_restore = resource_path("image/restore.png").replace('\\', '/')
+img_close = resource_path("image/close.png").replace('\\', '/')
+img_icon = resource_path("image/icon.png").replace('\\', '/')
+img_icon_black = resource_path("image/icon_black.png").replace('\\', '/')
 
 class InputDialog(QWidget):
     def __init__(self):
@@ -33,7 +52,7 @@ class InputDialog(QWidget):
 
     def initUi(self):
         self.setWindowTitle("新增/修改记录")
-        titleIcon = QIcon("image/icon_black.png")
+        titleIcon = QIcon(img_icon_black)
         self.setWindowIcon(titleIcon)
         self.resize(300, 200)
         self.center()
@@ -60,7 +79,7 @@ class InputDialog(QWidget):
         glLay.addWidget(label3, 2, 0)
         glLay.addWidget(self.level, 2, 1)
         btnLay.addWidget(self.ok_btn, 1)
-        btnLay.addWidget(self.cancel_btn,1)
+        btnLay.addWidget(self.cancel_btn, 1)
         topWidget.setLayout(glLay)
         botWidget.setLayout(btnLay)
         mainLayout.addWidget(topWidget)
@@ -92,7 +111,7 @@ class TitleWidget(QWidget):
     def __init__(self):
         super().__init__()
         # self.setStyleSheet("background-color:blue")
-        titleIcon = QPixmap("image/icon.png")
+        titleIcon = QPixmap(img_icon)
         self.Icon = myLabel()
         self.Icon.setPixmap(titleIcon.scaled(20, 20))
         titleContent = QLabel("备忘录")
@@ -134,69 +153,71 @@ class TitleWidget(QWidget):
 
             QPushButton#ButtonMin
             {
-                border-image:url(image/min.png) 0 81 0 0 ;
+                border-image:url(%s) 0 81 0 0 ;
 
             }
 
             QPushButton#ButtonMin:hover
             {
-                border-image:url(image/min.png) 0 54 0 27 ;
+                border-image:url(%s) 0 54 0 27 ;
             }
 
             QPushButton#ButtonMin:pressed
             {
-                border-image:url(image/min.png) 0 27 0 54 ;
+                border-image:url(%s) 0 27 0 54 ;
             }
 
             QPushButton#ButtonMax
             {
-                border-image:url(image/max.png) 0 81 0 0 ;
+                border-image:url(%s) 0 81 0 0 ;
             }
 
             QPushButton#ButtonMax:hover
             {
-                border-image:url(image/max.png) 0 54 0 27 ;
+                border-image:url(%s) 0 54 0 27 ;
             }
 
             QPushButton#ButtonMax:pressed
             {
-                border-image:url(image/max.png) 0 27 0 54 ;
+                border-image:url(%s) 0 27 0 54 ;
             }
 
             QPushButton#ButtonRestore
             {
-                border-image:url(image/restore.png) 0 81 0 0 ;
+                border-image:url(%s) 0 81 0 0 ;
             }
 
             QPushButton#ButtonRestore:hover
             {
-                border-image:url(image/restore.png) 0 54 0 27 ;
+                border-image:url(%s) 0 54 0 27 ;
             }
 
             QPushButton#ButtonRestore:pressed
             {
-                border-image:url(image/restore.png) 0 27 0 54 ;
+                border-image:url(%s) 0 27 0 54 ;
             }
 
             QPushButton#ButtonClose
             {
-                border-image:url(image/close.png) 0 81 0 0 ;
+                border-image:url(%s) 0 81 0 0 ;
                 border-top-right-radius:3 ;
             }
 
             QPushButton#ButtonClose:hover
             {
-                border-image:url(image/close.png) 0 54 0 27 ;
+                border-image:url(%s) 0 54 0 27 ;
                 border-top-right-radius:3 ;
             }
 
             QPushButton#ButtonClose:pressed
             {
-                border-image:url(image/close.png) 0 27 0 54 ;
+                border-image:url(%s) 0 27 0 54 ;
                 border-top-right-radius:3 ;
             }
 
-        '''
+            ''' % (
+        img_min, img_min, img_min, img_max, img_max, img_max, img_restore, img_restore, img_restore, img_close,
+        img_close, img_close)
         self.setStyleSheet(Qss)
 
         self.restorePos = None
@@ -275,7 +296,7 @@ class MainWindow(QMainWindow):
         slm = QStringListModel()  # 创建mode
         self.qList = []  # 添加的数组数据
         for row in result:
-            data_source.append([str(row[0]),str(row[1]),str(row[2]),str(row[3])])
+            data_source.append([str(row[0]), str(row[1]), str(row[2]), str(row[3])])
             self.qList.append("时间:" + str(row[1]) + "   事件：" + str(row[2]) + "   紧急程度：" + str(row[3]) + "级")
         if len(data_source) == 0:
             self.qList.append("还没有记录哦，点击左上角图标添加！")
@@ -341,6 +362,7 @@ class MainWindow(QMainWindow):
 
     def ButtonCloseSlot(self):
         self.close()
+
     def clickedlist(self, qModelIndex):
         global data_source
         self.dlg = InputDialog()
@@ -350,6 +372,7 @@ class MainWindow(QMainWindow):
         self.dlg.ok_btn.clicked.connect(self.prepare_update_data)
         self.dlg.cancel_btn.clicked.connect(self.dlg.close)
         pass
+
     def click_menu_to_update(self):
         global data_source, operate_index
         self.dlg = InputDialog()
@@ -358,6 +381,7 @@ class MainWindow(QMainWindow):
                            data_source[operate_index][2], data_source[operate_index][3])
         self.dlg.ok_btn.clicked.connect(self.prepare_update_data)
         self.dlg.cancel_btn.clicked.connect(self.dlg.close)
+
     def prepare_delete_data(self):
         global operate_index, data_source
         reply = QMessageBox.question(self,
